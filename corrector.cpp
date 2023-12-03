@@ -224,11 +224,64 @@ void	ListaCandidatas(
 	char	szPalabrasSugeridas[][TAMTOKEN], 	//Lista de palabras clonadas
 	int &	iNumSugeridas)						//Numero de elementos en la lista
 ******************************************************************************************************************/
-void	ClonaPalabras(
-	char *	szPalabraLeida,						// Palabra a clonar
-	char	szPalabrasSugeridas[][TAMTOKEN], 	//Lista de palabras clonadas
-	int &	iNumSugeridas)						//Numero de elementos en la lista
-{
-	//Sustituya estas lineas por su código
-	
-	char aux[TAMTOKEN] iNumSugeridas = 0;
+
+void ClonaPalabras(const char szPalabraLeida[], char szPalabrasSugeridas[][TAMTOKEN], int& iNumSugeridas) {
+	char palabraClonada[TAMTOKEN];
+	int conta = 0;
+
+	// Palabra original
+	strcpy_s(palabraClonada, szPalabraLeida);
+
+	// Pasar el abecedario en cada caracter
+	for (int i = 0; i < strlen(szPalabraLeida); i++) {
+		for (int j = 0; j < LONGITUD; j++) {
+			palabraClonada[i] = abecedario[j];
+			strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraClonada);
+		}
+		palabraClonada[i] = szPalabraLeida[i];
+	}
+
+	// Generar palabras con el abecedario
+	for (int k = 1; k < strlen(szPalabraLeida) + 1; k++) {
+		palabraClonada[k] = szPalabraLeida[k - 1];
+		for (int i = 0; i < LONGITUD; i++) {
+			palabraClonada[k - 1] = abecedario[i];
+			strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraClonada);
+		}
+		palabraClonada[k] = szPalabraLeida[k - 1];
+	}
+
+	// Eliminar los caracteres
+	for (int i = 0; i < strlen(szPalabraLeida) && strlen(szPalabraLeida) != 1; i++) {
+		for (int j = 0; j < strlen(szPalabraLeida); j++) {
+			if (j != i)
+				palabraClonada[conta++] = szPalabraLeida[j];
+		}
+		palabraClonada[conta] = '\0';
+		strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraClonada);
+		strcpy_s(palabraClonada, szPalabraLeida);
+		conta = 0;
+	}
+
+	// Generar palabras
+	for (int i = 0; i < strlen(szPalabraLeida) - 1; i++) {
+		palabraClonada[i] = szPalabraLeida[i + 1];
+		palabraClonada[i + 1] = szPalabraLeida[i];
+		strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraClonada);
+		strcpy_s(palabraClonada, szPalabraLeida);
+	}
+
+	//incluir la palabra original en las sugerencias
+	strcpy_s(szPalabrasSugeridas[iNumSugeridas++], szPalabraLeida);
+
+	// Ordenar las palabras con el metodo burbuja
+	for (int j = 0; j < iNumSugeridas - 1; j++) {
+		for (int i = j + 1; i < iNumSugeridas; i++) {
+			if (strcmp(szPalabrasSugeridas[j], szPalabrasSugeridas[i]) > 0) {
+				strcpy_s(palabraClonada, szPalabrasSugeridas[j]);
+				strcpy_s(szPalabrasSugeridas[j], szPalabrasSugeridas[i]);
+				strcpy_s(szPalabrasSugeridas[i], palabraClonada);
+			}
+		}
+	}
+}
