@@ -132,7 +132,7 @@ void Diccionario(char* szNombre, char szPalabras[][TAMTOKEN], int iEstadisticas[
 	int		iPeso[],							//Peso de las palabras en la lista final
 	int &	iNumLista)							//Numero de elementos en la szListaFinal
 ******************************************************************************************************************/
-void	ListaCandidatas		(
+void	ListaCandidatas(
 	char	szPalabrasSugeridas[][TAMTOKEN],	//Lista de palabras clonadas
 	int		iNumSugeridas,						//Lista de palabras clonadas
 	char	szPalabras[][TAMTOKEN],				//Lista de palabras del diccionario
@@ -140,16 +140,84 @@ void	ListaCandidatas		(
 	int		iNumElementos,						//Numero de elementos en el diccionario
 	char	szListaFinal[][TAMTOKEN],			//Lista final de palabras a sugerir
 	int		iPeso[],							//Peso de las palabras en la lista final
-	int &	iNumLista)							//Numero de elementos en la szListaFinal
+	int& iNumLista)							//Numero de elementos en la szListaFinal
 {
 
-	//Sustituya estas lineas por su código
-	strcpy(szListaFinal[0], szPalabrasSugeridas[ 0] ); //la palabra candidata
-	iPeso[0] = iEstadisticas[0];			// el peso de la palabra candidata
-	
-	iNumLista = 1;							//Una sola palabra candidata
+	iNumLista = 0;
+
+	for (int i = 0; i < iNumSugeridas; i++) {
+		for (int j = 0; j < iNumElementos; j++) {
+			// Comparar palabras del diccionario con las palabras clonadas
+			if (strcmp(szPalabrasSugeridas[i], szPalabras[j]) == 0) {
+				// Verificar si la palabra ya está en la lista final
+				bool palabraEnListaFinal = false;
+				for (int k = 0; k < iNumLista && !palabraEnListaFinal; k++) {
+					// Comparar palabras del diccionario con la lista final de palabras a sugerir
+					if (strcmp(szListaFinal[k], szPalabras[j]) == 0) {
+						palabraEnListaFinal = true;
+					}
+				}
+
+				// Pasar de la lista de palabras clonadas a la lista final de palabras a sugerir
+				if (palabraEnListaFinal) continue;
+
+				strcpy_s(szListaFinal[iNumLista], szPalabrasSugeridas[i]);
+				iPeso[iNumLista++] = iEstadisticas[j];
+			}
+		}
+	}
+
+	// Ordenar por peso de forma descendente
+	for (int i = 0; i < iNumLista; i++) {
+		for (int j = 0; j < iNumLista - 1; j++) {
+			// Ordenar la lista final y sus pesos
+			if (iPeso[j] < iPeso[j + 1]) {
+				// Variables para el método de las candidatas
+				int pesoTemporal; char palabraTemporal[TAMTOKEN];
+				strcpy_s(palabraTemporal, szListaFinal[j + 1]); pesoTemporal = iPeso[j + 1];
+				strcpy_s(szListaFinal[j + 1], szListaFinal[j]); iPeso[j + 1] = iPeso[j];
+				strcpy_s(szListaFinal[j], palabraTemporal); iPeso[j] = pesoTemporal;
+			}
+		}
+	}
 }
 
+	//iNumLista = 0;
+	   // for (int j = 0; j < iNumLista - 1; j++) {
+		//	for (int j = 0; j < iNumElementos; j++) {
+				//Comparar palabras del diccionario con las palabras clonadas//
+			//	if (strcmp(szPalabrasSugeridas[i], szPalabras[j]) == 0) {
+					//Verificar si la palabra ya esta en la lista final/
+				//	bool palabraEnListaFinal = false;
+					//for (int k = 0; k < iNumLista && !palabraEnListaFinal; k++)
+					//Comparar palabras del diccionario con la lista final de palabras a sugerir//
+					//	if (strcmp(szListaFinal[K], szPalabras[j]) == 0)
+					//		palabraEnListaFinal = true;
+					//Pasamos de la lista de palabras clondas a la lista final de palabras a sugerir//
+					//if (palabraEnListaFinal) continue;
+					//strcpy_s(szListaFinal[iNumLista], szPalabrasSugeridas[i]);
+					//iPeso[iNumLista++] = iEstadisticas[j];
+
+				//}
+			//}
+		//}
+
+	//Ordenar por peso de forma descendente
+	//for(int i=0; i < iNumLista; i++) {
+		//for(int j = 0; iNumLista - 1; j++) {
+			////Ordenar la lista final y sus pesos
+			//if (iPeso[j] < iPeso[j + 1]) {
+				////Variables para el metodo de las candidatas//
+				//int pesoTemporal; char palabraTemporal[50];
+				//strcpy_s(palabraTemporal, szListaFinal[j + 1]); pesoTemporal = iPeso[j + 1];
+				//strcpy_s(szListaFinal[j + 1], szListaFinal[j]); iPeso[j + 1] = iPeso[j];
+				//strcpy_s(szListaFinal[j], palabraTemporal); iPeso[j] = pesoTemporal;
+			//}
+		//}
+	//}
+
+//}
+   
 /*****************************************************************************************************************
 	ClonaPalabras: toma una palabra y obtiene todas las combinaciones y permutaciones requeridas por el metodo
 	char *	szPalabraLeida,						// Palabra a clonar
