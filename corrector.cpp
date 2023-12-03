@@ -224,69 +224,68 @@ void	ListaCandidatas(
 
 void ClonaPalabras(
 	char* szPalabraLeida,						// Palabra a clonar
-	char szPalabrasSugeridas[][TAMTOKEN], 	  //Lista de palabras clonadas
-	int& iNumSugeridas)					  //Numero de elementos en la lista
+	char  szPalabrasSugeridas[][TAMTOKEN], 	    //Lista de palabras clonadas
+	int& iNumSugeridas)					    //Numero de elementos en la lista
 {
 	char palabraClonada[TAMTOKEN];
 
-	// Genera palabras reemplazando cada letra con todas las letras del abecedario
-	for (int i = 0; i < strlen(szPalabraLeida); i++) {
+	// Palabra original
+	strcpy_s(palabraClonada, szPalabraLeida);
+
+	int longitud = strlen(szPalabraLeida);
+
+	// Pasar el abecedario en cada caracter
+	for (int i = 0; i < longitud; i++) {
 		for (int j = 0; j < LONGI; j++) {
-			szPalabraLeida[i] = abecedario[j];
-			strcpy_s(szPalabrasSugeridas[iNumSugeridas++], szPalabraLeida);
+			char palabraClonadaTemp[TAMTOKEN];
+			strcpy_s(palabraClonadaTemp, palabraClonada);
+			palabraClonadaTemp[i] = abecedario[j];
+			strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraClonadaTemp);
 		}
-		szPalabraLeida[i] = szPalabraLeida[i];
 	}
+	// Restaurar la palabra original
+	strcpy_s(palabraClonada, szPalabraLeida);
 
-	// Genera palabras insertando cada letra del abecedario en todas las partes posibles
-	for (int k = 0; k <= strlen(szPalabraLeida); k++) {
+	// Generar palabras con el abecedario
+	for (int k = 1; k < longitud + 1; k++) {
+		palabraClonada[k] = szPalabraLeida[k - 1];
 		for (int i = 0; i < LONGI; i++) {
-			char temp = szPalabraLeida[k];
-			szPalabraLeida[k] = abecedario[i];
-			strcpy_s(szPalabrasSugeridas[iNumSugeridas++], szPalabraLeida);
-			// Restaura la letra original
-			szPalabraLeida[k] = temp;
+			palabraClonada[k - 1] = abecedario[i];
+			strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraClonada);
 		}
+		palabraClonada[k] = szPalabraLeida[k - 1];
 	}
-
-	// Genera palabras eliminando la letra de la palabra original
-	for (int i = 0; i < strlen(szPalabraLeida) && strlen(szPalabraLeida) != 1; i++) {
-		char temp = szPalabraLeida[i];
-		for (int j = i; j < strlen(szPalabraLeida) - 1; j++) {
-			szPalabraLeida[j] = szPalabraLeida[j + 1];
+	// Eliminar los caracteres
+	for (int i = 0; i < longitud; i++) {
+		strcpy_s(palabraClonada, szPalabraLeida);
+		for (int j = i; j < longitud - 1; j++) {
+			palabraClonada[j] = palabraClonada[j + 1];
 		}
-		szPalabraLeida[strlen(szPalabraLeida) - 1] = '\0';
-		strcpy_s(szPalabrasSugeridas[iNumSugeridas++], szPalabraLeida);
-		// Restaura la letra original
-		szPalabraLeida[i] = temp;
+		palabraClonada[longitud - 1] = '\0';
+		strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraClonada);
+	}
+	// Generar palabras
+	for (int i = 0; i < longitud - 1; i++) {
+		palabraClonada[i] = szPalabraLeida[i + 1];
+		palabraClonada[i + 1] = szPalabraLeida[i];
+		strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraClonada);
 	}
 
-	// Genera palabras intercambiando letras 
-	for (int i = 0; i < strlen(szPalabraLeida) - 1; i++) {
-		// Intercambia las letras adyacentes 
-		char temp = szPalabraLeida[i];
-		szPalabraLeida[i] = szPalabraLeida[i + 1];
-		szPalabraLeida[i + 1] = temp;
-		strcpy_s(szPalabrasSugeridas[iNumSugeridas++], szPalabraLeida);
-		// Restaura la palabra original
-		szPalabraLeida[i + 1] = szPalabraLeida[i];
-		szPalabraLeida[i] = temp;
-	}
+	// Incluir la palabra original en las sugerencias
+	strcpy_s(szPalabrasSugeridas[iNumSugeridas++], szPalabraLeida);
 
-	// Ordena las palabras con el metodo burbuja
+	// Ordenar las palabras con el método burbuja
 	for (int j = 0; j < iNumSugeridas - 1; j++) {
 		for (int i = j + 1; i < iNumSugeridas; i++) {
 			if (strcmp(szPalabrasSugeridas[j], szPalabrasSugeridas[i]) > 0) {
-				char temp[TAMTOKEN];
-				strcpy_s(temp, szPalabrasSugeridas[j]);
+				strcpy_s(palabraClonada, szPalabrasSugeridas[j]);
 				strcpy_s(szPalabrasSugeridas[j], szPalabrasSugeridas[i]);
-				strcpy_s(szPalabrasSugeridas[i], temp);
+				strcpy_s(szPalabrasSugeridas[i], palabraClonada);
 			}
 		}
 	}
+
 }
-	
-	
 // Palabra original
 //strcpy_s(palabraClonada, szPalabraLeida);
 
