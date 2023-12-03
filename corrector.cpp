@@ -120,8 +120,8 @@ void Diccionario(char* szNombre, char szPalabras[][TAMTOKEN], int iEstadisticas[
 /*****************************************************************************************************************
 	ListaCandidatas: Esta funcion recupera desde el diccionario las palabras validas y su peso
 	Regresa las palabras ordenadas por su peso
-	char	szPalabrasSugeridas[][TAMTOKEN],	//Lista de palabras palabraGeneradaadas
-	int		iNumSugeridas,						//Lista de palabras palabraGeneradaadas
+	char	szPalabrasSugeridas[][TAMTOKEN],	//Lista de palabras clonadas
+	int		iNumSugeridas,						//Lista de palabras clonadas
 	char	szPalabras[][TAMTOKEN],				//Lista de palabras del diccionario
 	int		iEstadisticas[],					//Lista de las frecuencias de las palabras
 	int		iNumElementos,						//Numero de elementos en el diccionario
@@ -130,8 +130,8 @@ void Diccionario(char* szNombre, char szPalabras[][TAMTOKEN], int iEstadisticas[
 	int &	iNumLista)							//Numero de elementos en la szListaFinal
 ******************************************************************************************************************/
 void	ListaCandidatas(
-	char	szPalabrasSugeridas[][TAMTOKEN],	//Lista de palabras palabraGeneradaadas
-	int		iNumSugeridas,						//Lista de palabras palabraGeneradaadas
+	char	szPalabrasSugeridas[][TAMTOKEN],	//Lista de palabras clonadas
+	int		iNumSugeridas,						//Lista de palabras clonadas
 	char	szPalabras[][TAMTOKEN],				//Lista de palabras del diccionario
 	int		iEstadisticas[],					//Lista de las frecuencias de las palabras
 	int		iNumElementos,						//Numero de elementos en el diccionario
@@ -144,7 +144,7 @@ void	ListaCandidatas(
 
 	for (int i = 0; i < iNumSugeridas; i++) {
 		for (int j = 0; j < iNumElementos; j++) {
-			// Comparar palabras del diccionario con las palabras palabraGeneradaadas
+			// Comparar palabras del diccionario con las palabras clonadas
 			if (strcmp(szPalabrasSugeridas[i], szPalabras[j]) == 0) {
 				// Verificar si la palabra ya está en la lista final
 				bool palabraEnListaFinal = false;
@@ -155,7 +155,7 @@ void	ListaCandidatas(
 					}
 				}
 
-				// Pasar de la lista de palabras palabraGeneradaadas a la lista final de palabras a sugerir
+				// Pasar de la lista de palabras clonadas a la lista final de palabras a sugerir
 				if (palabraEnListaFinal) continue;
 
 				strcpy_s(szListaFinal[iNumLista], szPalabrasSugeridas[i]);
@@ -182,7 +182,7 @@ void	ListaCandidatas(
 	//iNumLista = 0;
 	   // for (int j = 0; j < iNumLista - 1; j++) {
 		//	for (int j = 0; j < iNumElementos; j++) {
-				//Comparar palabras del diccionario con las palabras palabraGeneradaadas//
+				//Comparar palabras del diccionario con las palabras clonadas//
 			//	if (strcmp(szPalabrasSugeridas[i], szPalabras[j]) == 0) {
 					//Verificar si la palabra ya esta en la lista final/
 				//	bool palabraEnListaFinal = false;
@@ -190,7 +190,7 @@ void	ListaCandidatas(
 					//Comparar palabras del diccionario con la lista final de palabras a sugerir//
 					//	if (strcmp(szListaFinal[K], szPalabras[j]) == 0)
 					//		palabraEnListaFinal = true;
-					//Pasamos de la lista de palabras palabraGeneradadas a la lista final de palabras a sugerir//
+					//Pasamos de la lista de palabras clondas a la lista final de palabras a sugerir//
 					//if (palabraEnListaFinal) continue;
 					//strcpy_s(szListaFinal[iNumLista], szPalabrasSugeridas[i]);
 					//iPeso[iNumLista++] = iEstadisticas[j];
@@ -215,7 +215,6 @@ void	ListaCandidatas(
 
 //}
    
-
 /*****************************************************************************************************************
 	ClonaPalabras: toma una palabra y obtiene todas las combinaciones y permutaciones requeridas por el metodo
 	char *	szPalabraLeida,						// Palabra a clonar
@@ -228,78 +227,62 @@ void ClonaPalabras(
 	char szPalabrasSugeridas[][TAMTOKEN], 	  //Lista de palabras clonadas
 	int& iNumSugeridas)					  //Numero de elementos en la lista
 {
-
-	iNumSugeridas = 0;
+	char palabraClonada[TAMTOKEN];
 
 	// Palabra original
-	char palabraGenerada[TAMTOKEN];
-	strcpy_s(palabraGenerada, szPalabraLeida);
+	strcpy_s(palabraClonada, szPalabraLeida);
 
-	// Genera palabras reemplazando cada letra con las del abecedario
-	for (int i = 0; i < strlen(szPalabraLeida); i++) {
-		for (int j = 0; j < LONGI; j++) {
-			palabraGenerada[i] = abecedario[j];
-			strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraGenerada);
-		}
-		palabraGenerada[i] = szPalabraLeida[i];
+	int longitud = strlen(szPalabraLeida);
+
+	// Pasar el abecedario en cada caracter
+	for (int i = 0; i < longitud; i++) {
+		szPalabrasSugeridas[iNumSugeridas++][i] = abecedario[i];
 	}
 
+	// Restaurar la palabra original
+	strcpy_s(palabraClonada, szPalabraLeida);
 
-	// Insertar cada letra del abecedario en la palabra
-	int k;
-	for (k = 1; k < strlen(szPalabraLeida) + 1; k++) {
-		palabraGenerada[k] = szPalabraLeida[k - 1];
-	}
-	
-	palabraGenerada[k] = '\0';
-
-	// Generar palabras insertando cada letra del abecedario
-	for (int i = 0; i < strlen(szPalabraLeida) + 1; i++) {
-		for (int j = 0; j < LONGI; j++) {
-			palabraGenerada[i] = abecedario[j];
-			strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraGenerada);
+	// Generar palabras con el abecedario
+	for (int k = 1; k < longitud + 1; k++) {
+		palabraClonada[k] = szPalabraLeida[k - 1];
+		for (int i = 0; i < LONGI; i++) {
+			szPalabrasSugeridas[iNumSugeridas++][k - 1] = abecedario[i];
 		}
-		palabraGenerada[i] = szPalabraLeida[i];
+		palabraClonada[k] = szPalabraLeida[k - 1];
 	}
 
-	// Generar palabras eliminando letras de la original
-	int cont = 0;
-	// Copia las letras de la palabra original a una variable temporal
-	for (int i = 0; i < strlen(szPalabraLeida) && strlen(szPalabraLeida) != 1; i++) {
-		strncpy_s(palabraGenerada, szPalabraLeida, i);
-		palabraGenerada[i] = '\0';
-		// Agrega la palabra sugerida a la matriz
-		strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraGenerada);
-		cont = 0;
-
-		// Genera palabras intercambiando letras 
-		for (int i = 0; i < strlen(szPalabraLeida) - 1; i++) {
-			palabraGenerada[i] = szPalabraLeida[i + 1];
-			palabraGenerada[i + 1] = szPalabraLeida[i];
-			strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraGenerada);
-			strcpy_s(palabraGenerada, szPalabraLeida);
+	// Eliminar los caracteres
+	for (int i = 0; i < longitud; i++) {
+		strcpy_s(palabraClonada, szPalabraLeida);
+		for (int j = i; j < longitud - 1; j++) {
+			palabraClonada[j] = palabraClonada[j + 1];
 		}
+		palabraClonada[longitud - 1] = '\0';
+		szPalabrasSugeridas[iNumSugeridas++][i] = palabraClonada[i];
+	}
 
-		// Incluir la palabra original en las sugerencias
-		strcpy_s(szPalabrasSugeridas[iNumSugeridas++], szPalabraLeida);
+	// Generar palabras
+	for (int i = 0; i < longitud - 1; i++) {
+		szPalabrasSugeridas[iNumSugeridas++][i] = szPalabraLeida[i];
+		szPalabrasSugeridas[iNumSugeridas++][i + 1] = szPalabraLeida[i + 1];
+	}
 
-		// Ordenar las palabras por el metodo burbuja
-		for (int j = 0; j < iNumSugeridas - 1; j++) {
-			for (int i = j + 1; i < iNumSugeridas; i++) {
-				if (strcmp(szPalabrasSugeridas[j], szPalabrasSugeridas[i]) > 0) {
-					char temp[TAMTOKEN];
-					strcpy_s(temp, szPalabrasSugeridas[j]);
-					strcpy_s(szPalabrasSugeridas[j], szPalabrasSugeridas[i]);
-					strcpy_s(szPalabrasSugeridas[i], temp);
-				}
+	// Incluir la palabra original
+	szPalabrasSugeridas[iNumSugeridas++][0] = szPalabraLeida[0];
+
+	// Ordenar las palabras con el método burbuja
+	for (int j = 0; j < iNumSugeridas - 1; j++) {
+		for (int i = j + 1; i < iNumSugeridas; i++) {
+			if (strcmp(szPalabrasSugeridas[j], szPalabrasSugeridas[i]) > 0) {
+				char temp[TAMTOKEN];
+				strcpy_s(temp, szPalabrasSugeridas[j]);
+				strcpy_s(szPalabrasSugeridas[j], szPalabrasSugeridas[i]);
+				strcpy_s(szPalabrasSugeridas[i], temp);
 			}
 		}
-
 	}
 
 }
-
-
 	
 	
 // Palabra original
@@ -307,7 +290,7 @@ void ClonaPalabras(
 
 // Pasar el abecedario en cada caracter
 //for (int i = 0; i < strlen(szPalabraLeida); i++) {
-	//for (int j = 0; j < LONGI; j++) {
+	//for (int j = 0; j < LONGITUD; j++) {
 		//palabraClonada[i] = abecedario[j];
 		//strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraClonada);
 	//palabraClonada[i] = szPalabraLeida[i];
@@ -315,10 +298,10 @@ void ClonaPalabras(
 // Generar palabras con el abecedario
 //for (int k = 1; k < strlen(szPalabraLeida) + 1; k++) {
 	//palabraClonada[k] = szPalabraLeida[k - 1];
-	//for (int i = 0; i < LONGI; i++) {
+	//for (int i = 0; i < LONGITUD; i++) {
 		//palabraClonada[k - 1] = abecedario[i];
 		//strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraClonada);
-
+	
 	//palabraClonada[k] = szPalabraLeida[k - 1];
 
 
@@ -327,7 +310,7 @@ void ClonaPalabras(
 	//for (int j = 0; j < strlen(szPalabraLeida); j++) {
 		//if (j != i)
 			//palabraClonada[conta++] = szPalabraLeida[j];
-
+	
 	//palabraClonada[conta] = '\0';
 	//strcpy_s(szPalabrasSugeridas[iNumSugeridas++], palabraClonada);
 	//strcpy_s(palabraClonada, szPalabraLeida);
@@ -352,4 +335,4 @@ void ClonaPalabras(
 			//strcpy_s(palabraClonada, szPalabrasSugeridas[j]);
 			//strcpy_s(szPalabrasSugeridas[j], szPalabrasSugeridas[i]);
 			//strcpy_s(szPalabrasSugeridas[i], palabraClonada);
-
+		
